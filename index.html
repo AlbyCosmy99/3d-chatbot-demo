@@ -11,6 +11,7 @@
       background: #e6f2ff;
     }
 
+    /* Hero */
     #hero {
       text-align: center;
       padding: 80px 20px;
@@ -32,6 +33,7 @@
       line-height: 1.6;
     }
 
+    /* Contenitore */
     #assistantContainer {
       position: fixed;
       bottom: 90px;
@@ -43,6 +45,7 @@
       z-index: 1000;
     }
 
+    /* Avatar */
     #scene {
       width: 300px;
       height: 400px;
@@ -51,6 +54,7 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
 
+    /* Chatbox */
     #chatbox {
       width: 280px;
       height: 400px;
@@ -104,7 +108,7 @@
     }
 
     #userInput {
-      width: 9rem;
+      flex: 1;
       border: none;
       outline: none;
       padding: 8px;
@@ -127,6 +131,7 @@
       background: #005fcc;
     }
 
+    /* Bottone toggle */
     #chatToggle {
       position: fixed;
       bottom: 20px;
@@ -143,6 +148,7 @@
       z-index: 1001;
     }
 
+    /* Bottone vocale */
     #voiceBtn {
       background: #0078ff;
       border-radius: 50%;
@@ -157,6 +163,27 @@
 
     #voiceBtn.listening {
       background: #ff4d4d;
+    }
+
+    /* 🔹 Responsive */
+    @media (max-width: 768px) {
+      #assistantContainer {
+        flex-direction: column;
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+        align-items: center;
+      }
+
+      #scene {
+        width: 90vw;
+        height: 50vh;
+      }
+
+      #chatbox {
+        width: 90vw;
+        height: 40vh;
+      }
     }
   </style>
 </head>
@@ -177,7 +204,6 @@
         <button onclick="sendMessage()">Invia</button>
         <button id="voiceBtn">🎤</button>
       </div>
-
     </div>
   </div>
 
