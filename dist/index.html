@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Demo Avatar 3D Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e6f2ff;
+    }
+
+    #hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, #0078ff, #00c6ff);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    #hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    #assistantContainer {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      display: none;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 20px;
+      z-index: 1000;
+    }
+
+    #scene {
+      width: 300px;
+      height: 400px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbox {
+      width: 280px;
+      height: 400px;
+      background: #ffffff;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    #messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #8e44ad;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 16px 16px 0 16px;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #ecf0f1;
+      color: #2c3e50;
+      padding: 8px 12px;
+      border-radius: 16px 16px 16px 0;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    #chatbox div:last-child {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 8px;
+      background: #fafafa;
+      gap: 6px;
+    }
+
+    #userInput {
+      width: 9rem;
+      border: none;
+      outline: none;
+      padding: 8px;
+      border-radius: 12px;
+      background: #f0f0f0;
+    }
+
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 12px;
+      background: #0078ff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    #chatToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #0078ff;
+      color: white;
+      font-size: 28px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+    }
+
+    #voiceBtn {
+      background: #0078ff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    #voiceBtn.listening {
+      background: #ff4d4d;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-DG48ACWA.js"></script>
+</head>
+
+<body>
+  <header id="hero">
+    <h1>🤖 Benvenuto nel tuo Assistente Virtuale 3D</h1>
+    <p>Un chatbot interattivo con avatar 3D: clicca sull’icona 💬 in basso a destra per iniziare a parlare con me.</p>
+  </header>
+
+  <div id="assistantContainer">
+    <canvas id="scene"></canvas>
+
+    <div id="chatbox">
+      <div id="messages"></div>
+      <div>
+        <input id="userInput" type="text" placeholder="Scrivi qui..." />
+        <button onclick="sendMessage()">Invia</button>
+        <button id="voiceBtn">🎤</button>
+      </div>
+
+    </div>
+  </div>
+
+  <button id="chatToggle">💬</button>
+
+  <script>
+    const chatToggle = document.getElementById("chatToggle");
+    const assistantContainer = document.getElementById("assistantContainer");
+
+    chatToggle.addEventListener("click", () => {
+      if (assistantContainer.style.display === "none") {
+        assistantContainer.style.display = "flex";
+        if (typeof init === "function") init();
+      } else {
+        assistantContainer.style.display = "none";
+      }
+    });
+  </script>
+</body>
+
+</html>
