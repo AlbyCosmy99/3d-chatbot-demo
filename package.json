@@ -1,6 +1,7 @@
 {
-  "name": "demo-avatar-chat",
+  "name": "3d-chatbot-demo",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

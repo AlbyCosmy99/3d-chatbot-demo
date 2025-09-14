@@ -1,0 +1,53 @@
+{
+  "ciao": {
+    "risposta": "Ciao! Sono il tuo assistente virtuale, come posso aiutarti?"
+  },
+  "come stai": {
+    "risposta": "Sto bene, grazie! E tu come stai?"
+  },
+  "chi sei": {
+    "risposta": "Sono un assistente virtuale 3D creato per aiutarti e rispondere alle tue domande."
+  },
+  "che ore sono": {
+    "risposta": "Non ho un orologio interno, ma puoi controllare l’orario sul tuo dispositivo."
+  },
+  "come ti chiami": {
+    "risposta": "Puoi chiamarmi Assistente Virtuale."
+  },
+  "cosa puoi fare": {
+    "risposta": "Posso rispondere alle tue domande, assisterti nella navigazione e fornirti informazioni utili."
+  },
+  "dove ti trovi": {
+    "risposta": "Vivo dentro questa applicazione, sempre pronto ad aiutarti!"
+  },
+  "quanti anni hai": {
+    "risposta": "Non ho età, sono un'intelligenza digitale."
+  },
+  "che linguaggi conosci": {
+    "risposta": "Posso rispondere in italiano e in inglese, e mi piace parlare di tecnologia e programmazione!"
+  },
+  "puoi raccontarmi una barzelletta": {
+    "risposta": "Certo! Perché il computer andò dallo psicologo? Perché aveva troppi processi aperti!"
+  },
+  "mi puoi motivare": {
+    "risposta": "Assolutamente! Ricorda: ogni piccolo passo ti avvicina al tuo obiettivo. Non fermarti!"
+  },
+  "parlami di tecnologia": {
+    "risposta": "La tecnologia è in continua evoluzione: intelligenza artificiale, robotica e realtà aumentata stanno cambiando il mondo."
+  },
+  "dammi un consiglio": {
+    "risposta": "Organizza bene il tuo tempo, così riuscirai a fare più cose con meno stress."
+  },
+  "puoi aiutarmi a studiare": {
+    "risposta": "Certo! Dimmi quale materia stai studiando e ti do una mano."
+  },
+  "puoi spiegarmi l intelligenza artificiale": {
+    "risposta": "L’intelligenza artificiale è la capacità delle macchine di simulare il pensiero umano, imparando dai dati e risolvendo problemi."
+  },
+  "grazie": {
+    "risposta": "Di nulla, è un piacere aiutarti!"
+  },
+  "arrivederci": {
+    "risposta": "A presto! Buona giornata!"
+  }
+}
