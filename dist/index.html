@@ -11,6 +11,7 @@
       background: #e6f2ff;
     }
 
+    /* Hero */
     #hero {
       text-align: center;
       padding: 80px 20px;
@@ -32,6 +33,7 @@
       line-height: 1.6;
     }
 
+    /* Contenitore */
     #assistantContainer {
       position: fixed;
       bottom: 90px;
@@ -43,19 +45,23 @@
       z-index: 1000;
     }
 
+    /* Avatar */
     #scene {
       width: 300px;
-      height: 400px;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      height: 300px;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
     }
 
+    /* Chatbox */
     #chatbox {
-      width: 280px;
-      height: 400px;
+      width: 360px;
+      height: 460px;
       background: #ffffff;
-      border-radius: 16px;
+      border-radius: 18px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -64,20 +70,20 @@
 
     #messages {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       font-size: 14px;
       scroll-behavior: smooth;
     }
 
     .message.user {
       align-self: flex-end;
-      background: #8e44ad;
+      background: #0078ff;
       color: white;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 16px 16px 0 16px;
       max-width: 80%;
       word-wrap: break-word;
@@ -86,47 +92,73 @@
 
     .message.bot {
       align-self: flex-start;
-      background: #ecf0f1;
+      background: #f1f1f1;
       color: #2c3e50;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 16px 16px 16px 0;
       max-width: 80%;
       word-wrap: break-word;
       font-size: 14px;
     }
 
-    #chatbox div:last-child {
+    /* Footer chat */
+    #chatFooter {
       display: flex;
+      align-items: center;
       border-top: 1px solid #ddd;
       padding: 8px;
-      background: #fafafa;
-      gap: 6px;
+      background: #fff;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
 
     #userInput {
-      width: 9rem;
+      flex: 1;
       border: none;
       outline: none;
-      padding: 8px;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 18px;
       background: #f0f0f0;
+      font-size: 14px;
+      resize: none;
+      min-height: 38px;
+      max-height: 120px;
+      line-height: 1.4;
+      overflow-y: auto;
     }
 
-    button {
-      padding: 6px 12px;
+    .iconBtn {
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
       border: none;
-      border-radius: 12px;
-      background: #0078ff;
-      color: white;
-      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      font-size: 18px;
+      color: #fff;
       transition: background 0.2s ease;
+      flex-shrink: 0;
     }
 
-    button:hover {
-      background: #005fcc;
+    #sendBtn {
+      background: #0078ff;
     }
 
+    #voiceBtn {
+      background: #28a745;
+    }
+
+    #stopBtn {
+      background: #dc3545;
+    }
+
+    .iconBtn:hover {
+      opacity: 0.85;
+    }
+
+    /* Bottone toggle */
     #chatToggle {
       position: fixed;
       bottom: 20px;
@@ -143,23 +175,37 @@
       z-index: 1001;
     }
 
-    #voiceBtn {
-      background: #0078ff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-    }
+    /* 🔹 Responsive */
+    @media (max-width: 768px) {
+      #assistantContainer {
+        flex-direction: column;
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+        align-items: center;
+      }
 
-    #voiceBtn.listening {
-      background: #ff4d4d;
+      #scene {
+        width: 90vw;
+        height: 40vh;
+      }
+
+      #chatbox {
+        width: 90vw;
+        height: 55vh;
+      }
+
+      #chatFooter {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      #userInput {
+        flex: 100%;
+      }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-DG48ACWA.js"></script>
+  <script type="module" crossorigin src="./assets/index-t_scOIgI.js"></script>
 </head>
 
 <body>
@@ -168,17 +214,17 @@
     <p>Un chatbot interattivo con avatar 3D: clicca sull’icona 💬 in basso a destra per iniziare a parlare con me.</p>
   </header>
 
-  <div id="assistantContainer">
-    <canvas id="scene"></canvas>
+  <canvas id="scene"></canvas>
 
+  <div id="assistantContainer">
     <div id="chatbox">
       <div id="messages"></div>
-      <div>
-        <input id="userInput" type="text" placeholder="Scrivi qui..." />
-        <button onclick="sendMessage()">Invia</button>
-        <button id="voiceBtn">🎤</button>
+      <div id="chatFooter">
+        <textarea id="userInput" placeholder="Scrivi qui..."></textarea>
+        <button id="sendBtn" class="iconBtn" onclick="sendMessage()">📩</button>
+        <button id="voiceBtn" class="iconBtn">🎤</button>
+        <button id="stopBtn" class="iconBtn">⏹️</button>
       </div>
-
     </div>
   </div>
 
@@ -187,13 +233,16 @@
   <script>
     const chatToggle = document.getElementById("chatToggle");
     const assistantContainer = document.getElementById("assistantContainer");
+    const scene = document.getElementById("scene");
 
     chatToggle.addEventListener("click", () => {
       if (assistantContainer.style.display === "none") {
         assistantContainer.style.display = "flex";
+        scene.style.display = "flex";
         if (typeof init === "function") init();
       } else {
         assistantContainer.style.display = "none";
+        scene.style.display = "none";
       }
     });
   </script>
