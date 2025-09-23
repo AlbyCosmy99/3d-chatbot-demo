@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Demo Avatar 3D Chatbot</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #e6f2ff;
+    }
+
+    /* Hero */
+    #hero {
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, #0078ff, #00c6ff);
+      color: white;
+      font-family: "Segoe UI", sans-serif;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    #hero p {
+      font-size: 1.2rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Contenitore */
+    #assistantContainer {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      display: none;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 20px;
+      z-index: 1000;
+    }
+
+    /* Avatar */
+    #scene {
+      width: 300px;
+      height: 300px;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+    }
+
+    /* Chatbox */
+    #chatbox {
+      width: 360px;
+      height: 460px;
+      background: #ffffff;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    #messages {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: #0078ff;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 16px 16px 0 16px;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: #f1f1f1;
+      color: #2c3e50;
+      padding: 10px 14px;
+      border-radius: 16px 16px 16px 0;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    /* Footer chat */
+    #chatFooter {
+      display: flex;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      padding: 8px;
+      background: #fff;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+
+    #userInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      border-radius: 18px;
+      background: #f0f0f0;
+      font-size: 14px;
+      resize: none;
+      min-height: 38px;
+      max-height: 120px;
+      line-height: 1.4;
+      overflow-y: auto;
+    }
+
+    .iconBtn {
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #fff;
+      transition: background 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    #sendBtn {
+      background: #0078ff;
+    }
+
+    #voiceBtn {
+      background: #28a745;
+    }
+
+    #stopBtn {
+      background: #dc3545;
+    }
+
+    .iconBtn:hover {
+      opacity: 0.85;
+    }
+
+    /* Bottone toggle */
+    #chatToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #0078ff;
+      color: white;
+      font-size: 28px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+    }
+
+    /* 🔹 Responsive */
+    @media (max-width: 768px) {
+      #assistantContainer {
+        flex-direction: column;
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+        align-items: center;
+      }
+
+      #scene {
+        width: 90vw;
+        height: 40vh;
+      }
+
+      #chatbox {
+        width: 90vw;
+        height: 55vh;
+      }
+
+      #chatFooter {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      #userInput {
+        flex: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="hero">
+    <h1>🤖 Benvenuto nel tuo Assistente Virtuale 3D</h1>
+    <p>Un chatbot interattivo con avatar 3D: clicca sull’icona 💬 in basso a destra per iniziare a parlare con me.</p>
+  </header>
+
+  <canvas id="scene"></canvas>
+
+  <div id="assistantContainer">
+    <div id="chatbox">
+      <div id="messages"></div>
+      <div id="chatFooter">
+        <textarea id="userInput" placeholder="Scrivi qui..."></textarea>
+        <button id="sendBtn" class="iconBtn" onclick="sendMessage()">📩</button>
+        <button id="voiceBtn" class="iconBtn">🎤</button>
+        <button id="stopBtn" class="iconBtn">⏹️</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="chatToggle">💬</button>
+
+  <script type="module" src="index.js"></script>
+  <script>
+    const chatToggle = document.getElementById("chatToggle");
+    const assistantContainer = document.getElementById("assistantContainer");
+    const scene = document.getElementById("scene");
+
+    chatToggle.addEventListener("click", () => {
+      if (assistantContainer.style.display === "none") {
+        assistantContainer.style.display = "flex";
+        scene.style.display = "flex";
+        if (typeof init === "function") init();
+      } else {
+        assistantContainer.style.display = "none";
+        scene.style.display = "none";
+      }
+    });
+  </script>
+</body>
+
+</html>
