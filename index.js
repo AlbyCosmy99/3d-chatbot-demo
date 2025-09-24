@@ -129,8 +129,8 @@ async function sendMessage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        //"Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
+        "Authorization": `Bearer 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`
+        //"Authorization": `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
