@@ -40,27 +40,24 @@ function init() {
 
   const loader = new GLTFLoader();
   loader.load(
-    "/avatar.glb",
+    "/Avatar_v5.glb",
     (gltf) => {
       console.log("Animazioni disponibili:", gltf.animations.map(a => a.name));
 
       avatar = gltf.scene;
       scene.add(avatar);
 
-      // 1. Ruota il modello se serve
-      avatar.rotation.x = Math.PI / 2;
-
-      // 2. Calcolo bounding box aggiornato
+      // Calcolo bounding box aggiornato
       const box3 = new THREE.Box3().setFromObject(avatar);
       const size = new THREE.Vector3();
       box3.getSize(size);
       const center = new THREE.Vector3();
       box3.getCenter(center);
 
-      // 3. Centra il modello
+      // Centra il modello
       avatar.position.sub(center);
 
-      // 4. Adatta la camera
+      // Adatta la camera
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = camera.fov * (Math.PI / 180);
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
@@ -69,7 +66,7 @@ function init() {
       camera.position.set(0, size.y * 0.5, cameraZ);
       camera.lookAt(0, size.y * 0.5, 0);
 
-      // 5. Mixer animazioni
+      // Mixer animazioni
       mixer = new THREE.AnimationMixer(avatar);
       if (gltf.animations.length > 0) {
         mixer.clipAction(gltf.animations[0]).play();
@@ -159,11 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") sendMessage();
   });
 
-  // 👉 collega il bottone STOP
+  // bottone STOP
   const stopBtn = document.getElementById("stopBtn");
-  if (stopBtn) {
-    stopBtn.addEventListener("click", stopSpeaking);
-  }
+  if (stopBtn) stopBtn.addEventListener("click", stopSpeaking);
 });
 
 function addMessage(sender, text) {
@@ -177,16 +172,10 @@ function addMessage(sender, text) {
 
 function stopSpeaking() {
   const synth = window.speechSynthesis;
+  if (synth.speaking || synth.pending) synth.cancel();
 
-  // stop voce subito
-  if (synth.speaking || synth.pending) {
-    synth.cancel();
-  }
-
-  // reset stato parlato
   isSpeaking = false;
 
-  // ferma animazione bocca
   clearInterval(speakingInterval);
   speakingInterval = null;
 
@@ -217,13 +206,18 @@ function parla(testo) {
 
   voce.onstart = () => {
     isSpeaking = true;
+    let phase = 0;
+
     if (mouthSmileIndex !== undefined) {
       head.morphTargetInfluences[mouthSmileIndex] = 0.25;
     }
+
     if (mouthOpenIndex !== undefined) {
       speakingInterval = setInterval(() => {
-        head.morphTargetInfluences[mouthOpenIndex] = Math.random() * 0.9;
-      }, 120);
+        phase += 0.25;
+        head.morphTargetInfluences[mouthOpenIndex] =
+          (Math.sin(phase) * 0.5 + 0.5) * 0.9; // da 0 → 0.9
+      }, 60);
     }
   };
 
@@ -232,6 +226,7 @@ function parla(testo) {
   synth.speak(voce);
 }
 
+// --- Riconoscimento vocale ---
 const voiceBtn = document.getElementById("voiceBtn");
 
 if ("webkitSpeechRecognition" in window) {
