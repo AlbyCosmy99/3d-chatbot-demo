@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import 'dotenv/config';
 
 let knowledge = {};
 let scene, camera, renderer, mixer, avatar, clock;
@@ -128,7 +129,7 @@ async function sendMessage() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+        //"Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
         "Authorization": `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
