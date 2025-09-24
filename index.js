@@ -47,6 +47,11 @@ function init() {
       avatar = gltf.scene;
       scene.add(avatar);
 
+      // Debug: stampa tutti i mesh trovati
+      avatar.traverse((child) => {
+        if (child.isMesh) console.log("Mesh trovata:", child.name);
+      });
+
       // Calcolo bounding box aggiornato
       const box3 = new THREE.Box3().setFromObject(avatar);
       const size = new THREE.Vector3();
@@ -90,7 +95,7 @@ function animate() {
 
   if (avatar) {
     const t = clock.elapsedTime;
-    const head = avatar.getObjectByName("Wolf3D_Head");
+    const head = avatar.getObjectByName("Wolf3D_Head") || avatar.getObjectByName("Mesh002");
 
     if (!isSpeaking) {
       avatar.position.y = Math.sin(t * 1.2) * 0.02;
@@ -129,7 +134,6 @@ async function sendMessage() {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-        //"Authorization": `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
         model: "llama-3.1-8b-instant",
@@ -157,7 +161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter") sendMessage();
   });
 
-  // bottone STOP
   const stopBtn = document.getElementById("stopBtn");
   if (stopBtn) stopBtn.addEventListener("click", stopSpeaking);
 });
@@ -172,55 +175,61 @@ function addMessage(sender, text) {
 }
 
 function stopSpeaking() {
+  if (!avatar) {
+    console.warn("⏳ Avatar non ancora caricato");
+    return;
+  }
+
   const synth = window.speechSynthesis;
   if (synth.speaking || synth.pending) synth.cancel();
 
   isSpeaking = false;
-
   clearInterval(speakingInterval);
   speakingInterval = null;
 
-  const head = avatar?.getObjectByName("Wolf3D_Head");
+  const head = avatar.getObjectByName("Wolf3D_Head") || avatar.getObjectByName("Mesh002");
 
   if (head && head.morphTargetDictionary) {
-    const mouthOpenIndex = head.morphTargetDictionary.mouthOpen;
-    const mouthSmileIndex = head.morphTargetDictionary.mouthSmile;
-    if (mouthOpenIndex !== undefined) head.morphTargetInfluences[mouthOpenIndex] = 0;
-    if (mouthSmileIndex !== undefined) head.morphTargetInfluences[mouthSmileIndex] = 0;
+    Object.keys(head.morphTargetDictionary).forEach(key => {
+      const idx = head.morphTargetDictionary[key];
+      head.morphTargetInfluences[idx] = 0;
+    });
   }
 
   console.log("⏹️ Parlato interrotto manualmente.");
 }
 
 function parla(testo) {
+  if (!avatar) {
+    console.warn("⏳ Avatar non ancora caricato");
+    return;
+  }
+
   const synth = window.speechSynthesis;
   const voce = new SpeechSynthesisUtterance(testo);
   voce.lang = "it-IT";
 
-  // Cerca la mesh con morph targets
-  const head = avatar.getObjectByName("Mesh002"); // <-- controlla col traverse
+  const head = avatar.getObjectByName("Wolf3D_Head") || avatar.getObjectByName("Mesh002");
   console.log("Head trovato:", head);
 
   if (!head || !head.morphTargetDictionary) {
-    console.warn("❌ Nessun morph target trovato");
+    console.warn("❌ Nessun morph target trovato, uso solo TTS");
     synth.speak(voce);
     return;
   }
+
   console.log("✅ Morph targets trovati:", head.morphTargetDictionary);
 
-  const phonemes = ["aa", "O", "E", "I", "U", "FF", "CH", "SS", "nn", "RR", "PP"];
+  const phonemes = Object.keys(head.morphTargetDictionary);
 
   voce.onstart = () => {
     isSpeaking = true;
-
     speakingInterval = setInterval(() => {
-      // reset tutti i fonemi
       phonemes.forEach(p => {
         const idx = head.morphTargetDictionary[p];
         if (idx !== undefined) head.morphTargetInfluences[idx] = 0;
       });
 
-      // attiva uno random
       const randomPhoneme = phonemes[Math.floor(Math.random() * phonemes.length)];
       const idx = head.morphTargetDictionary[randomPhoneme];
       if (idx !== undefined) {
@@ -230,11 +239,8 @@ function parla(testo) {
   };
 
   voce.onend = () => stopSpeaking();
-
   synth.speak(voce);
 }
-
-
 
 // --- Riconoscimento vocale ---
 const voiceBtn = document.getElementById("voiceBtn");
