@@ -196,49 +196,43 @@ function parla(testo) {
   const voce = new SpeechSynthesisUtterance(testo);
   voce.lang = "it-IT";
 
-  const head = avatar?.getObjectByName("Wolf3D_Head");
-  console.log('qui')
+  // Cerca la mesh con morph targets
+  const head = avatar.getObjectByName("Mesh002"); // <-- controlla col traverse
+  console.log("Head trovato:", head);
+
   if (!head || !head.morphTargetDictionary) {
+    console.warn("❌ Nessun morph target trovato");
     synth.speak(voce);
     return;
   }
-  console.log('qua')
+  console.log("✅ Morph targets trovati:", head.morphTargetDictionary);
 
-  // Elenco dei fonemi principali disponibili
   const phonemes = ["aa", "O", "E", "I", "U", "FF", "CH", "SS", "nn", "RR", "PP"];
 
   voce.onstart = () => {
     isSpeaking = true;
-    let phase = 0;
-
-    // leggera espressione di sorriso
-    const smileIdx = head.morphTargetDictionary["mouthSmile"];
-    if (smileIdx !== undefined) {
-      head.morphTargetInfluences[smileIdx] = 0.2;
-    }
 
     speakingInterval = setInterval(() => {
-      // resetta tutti i fonemi a 0
+      // reset tutti i fonemi
       phonemes.forEach(p => {
         const idx = head.morphTargetDictionary[p];
         if (idx !== undefined) head.morphTargetInfluences[idx] = 0;
       });
 
-      // attiva un fonema casuale
+      // attiva uno random
       const randomPhoneme = phonemes[Math.floor(Math.random() * phonemes.length)];
       const idx = head.morphTargetDictionary[randomPhoneme];
       if (idx !== undefined) {
-        head.morphTargetInfluences[idx] = Math.random() * 0.9; // intensità variabile
+        head.morphTargetInfluences[idx] = Math.random();
       }
-
-      phase += 0.25;
-    }, 100); // cambia fonema ogni 100ms
+    }, 120);
   };
 
   voce.onend = () => stopSpeaking();
 
   synth.speak(voce);
 }
+
 
 
 // --- Riconoscimento vocale ---
