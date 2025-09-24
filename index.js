@@ -180,6 +180,7 @@ function stopSpeaking() {
   speakingInterval = null;
 
   const head = avatar?.getObjectByName("Wolf3D_Head");
+
   if (head && head.morphTargetDictionary) {
     const mouthOpenIndex = head.morphTargetDictionary.mouthOpen;
     const mouthSmileIndex = head.morphTargetDictionary.mouthSmile;
@@ -196,35 +197,49 @@ function parla(testo) {
   voce.lang = "it-IT";
 
   const head = avatar?.getObjectByName("Wolf3D_Head");
+  console.log('qui')
   if (!head || !head.morphTargetDictionary) {
     synth.speak(voce);
     return;
   }
+  console.log('qua')
 
-  const mouthOpenIndex = head.morphTargetDictionary.mouthOpen;
-  const mouthSmileIndex = head.morphTargetDictionary.mouthSmile;
+  // Elenco dei fonemi principali disponibili
+  const phonemes = ["aa", "O", "E", "I", "U", "FF", "CH", "SS", "nn", "RR", "PP"];
 
   voce.onstart = () => {
     isSpeaking = true;
     let phase = 0;
 
-    if (mouthSmileIndex !== undefined) {
-      head.morphTargetInfluences[mouthSmileIndex] = 0.25;
+    // leggera espressione di sorriso
+    const smileIdx = head.morphTargetDictionary["mouthSmile"];
+    if (smileIdx !== undefined) {
+      head.morphTargetInfluences[smileIdx] = 0.2;
     }
 
-    if (mouthOpenIndex !== undefined) {
-      speakingInterval = setInterval(() => {
-        phase += 0.25;
-        head.morphTargetInfluences[mouthOpenIndex] =
-          (Math.sin(phase) * 0.5 + 0.5) * 0.9; // da 0 → 0.9
-      }, 60);
-    }
+    speakingInterval = setInterval(() => {
+      // resetta tutti i fonemi a 0
+      phonemes.forEach(p => {
+        const idx = head.morphTargetDictionary[p];
+        if (idx !== undefined) head.morphTargetInfluences[idx] = 0;
+      });
+
+      // attiva un fonema casuale
+      const randomPhoneme = phonemes[Math.floor(Math.random() * phonemes.length)];
+      const idx = head.morphTargetDictionary[randomPhoneme];
+      if (idx !== undefined) {
+        head.morphTargetInfluences[idx] = Math.random() * 0.9; // intensità variabile
+      }
+
+      phase += 0.25;
+    }, 100); // cambia fonema ogni 100ms
   };
 
   voce.onend = () => stopSpeaking();
 
   synth.speak(voce);
 }
+
 
 // --- Riconoscimento vocale ---
 const voiceBtn = document.getElementById("voiceBtn");
