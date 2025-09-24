@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import 'dotenv/config';
 
 let knowledge = {};
 let scene, camera, renderer, mixer, avatar, clock;
