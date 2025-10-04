@@ -262,7 +262,7 @@
   right: 20px;
   width: 60px;
   height: 60px;
-  border-radius: 50%;        
+  border-radius: 50%;         
   background: #0078ff;
   color: white;
   font-size: 28px;
@@ -7984,32 +7984,189 @@ flexibility(document.documentElement);</script>
 
 
 
-                <canvas id="scene" style="
-                  position: fixed;
-                  bottom: 0;
-                  right: 0;
-                  z-index: 9999;
-                  min-width: 375px;
-                  max-width: 100%;
-                  width: 30vw;
-                  height: 90%;
-                  border: none;
-                  border-radius: 12px;
-                  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-                  background: linear-gradient(135deg, #f3f3f3, #e0e0e0);
-                "></canvas>
-                <button id="chatToggle">💬</button>
-                <div id="assistantContainer">
-                  <div id="chatbox">
-                    <div id="messages"></div>
-                    <div id="chatFooter">
-                      <textarea id="userInput" placeholder="Scrivi qui..."></textarea>
-                      <button id="sendBtn" class="iconBtn" onclick="sendMessage()">📩</button>
-                      <button id="voiceBtn" class="iconBtn">🎤</button>
-                      <button id="stopBtn" class="iconBtn">⏹️</button>
-                    </div>
-                  </div>
-                </div>
+                <!-- Bottone toggle -->
+<button id="chatToggle">💬</button>
+
+<!-- Wrapper avatar + chat -->
+<div id="assistantWrapper" style="
+  display:none;
+  position:fixed;
+  bottom:0;
+  right:20px;
+  width:30vw;
+  min-width:375px;
+  max-width:100%;
+  height:90%;
+  border-radius:12px;
+  overflow:hidden;
+  z-index:9999;
+">
+
+  <!-- Avatar Three.js -->
+  <canvas id="scene" style="
+    width:100%;
+    height:100%;
+    display:block;
+    background:transparent;
+  "></canvas>
+
+  <!-- Chatbox overlay trasparente -->
+  <div id="assistantContainer" style="
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:transparent;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:10px;
+    box-sizing:border-box;
+  ">
+    <!-- Messaggi -->
+    <div id="messages" style="
+      max-height:160px;
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      width:100%;
+    ">
+      <div class="message bot" style="
+        background:rgba(0,120,255,0.9);
+        color:white;
+        padding:8px 12px;
+        border-radius:12px;
+        max-width:80%;
+        font-size:14px;
+      ">
+        Ciao! Come posso aiutarti oggi?
+      </div>
+    </div>
+
+    <!-- Input + bottoni -->
+    <div id="chatFooter" style="
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      width:100%;
+    ">
+      <textarea id="userInput" placeholder="Scrivi qui..." style="
+        width:100%;
+        border:none;
+        background:rgba(240,240,240,0.8);
+        border-radius:16px;
+        padding:8px;
+        resize:none;
+        font-size:14px;
+      "></textarea>
+
+      <div style="display:flex; gap:8px; justify-content:space-between; width:100%;">
+        <button id="sendBtn" class="circleBtn">📩</button>
+        <button id="voiceBtn" class="circleBtn">🎤</button>
+        <button id="stopBtn" class="circleBtn">⏹️</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Toggle rotondo 💬 */
+  #chatToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #0078ff;
+    color: white;
+    font-size: 28px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 1001;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  /* Bottoni chat */
+  .circleBtn {
+    flex:1;
+    min-width:40px;
+    max-width:60px;
+    height:40px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: rgba(0,120,255,0.85);
+    color:white;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .circleBtn:hover {
+    background: rgba(0,120,255,1);
+    transform: scale(1.05);
+  }
+
+  /* Bolle messaggi */
+  .message.user {
+    align-self:flex-end;
+    background:rgba(0,120,255,0.9);
+    color:white;
+    padding:8px 12px;
+    border-radius:12px 12px 0 12px;
+    font-size:14px;
+  }
+  .message.bot {
+    align-self:flex-start;
+    background:rgba(255,255,255,0.8);
+    color:#2c3e50;
+    padding:8px 12px;
+    border-radius:12px 12px 12px 0;
+    font-size:14px;
+  }
+</style>
+
+<script>
+  const wrapper = document.getElementById("assistantWrapper");
+  const chatToggle = document.getElementById("chatToggle");
+
+  chatToggle.addEventListener("click", () => {
+    chatToggle.style.display = "none"; 
+    wrapper.style.display = "block"; 
+    if (typeof init === "function") init(); // avvia Three.js
+  });
+
+  // Bottone chiusura ✖
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "✖";
+  closeBtn.style.cssText = `
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0078ff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 10000;
+  `;
+  wrapper.appendChild(closeBtn);
+
+  closeBtn.addEventListener("click", () => {
+    wrapper.style.display = "none";
+    chatToggle.style.display = "flex";
+  });
+</script>
+
 
 
 
