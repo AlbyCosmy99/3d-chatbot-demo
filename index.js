@@ -7,14 +7,12 @@ let speakingInterval = null;
 let isSpeaking = false;
 let initialized = false;
 
-// 🔹 Audio element persistente (iOS compatibile)
 let audioElement = new Audio();
 let audioUnlocked = false;
 
-// --- Sblocca l’audio al primo tap su iOS ---
 document.addEventListener("click", () => {
   if (!audioUnlocked) {
-    audioElement.play().catch(() => {});
+    audioElement.play().catch(() => { });
     audioElement.pause();
     audioUnlocked = true;
     console.log("🔓 Audio sbloccato per iOS");
@@ -53,42 +51,47 @@ function init() {
   scene.add(dirLight);
 
   const loader = new GLTFLoader();
- loader.load("/Avatar_v5.glb", (gltf) => {
-  avatar = gltf.scene;
-  scene.add(avatar);
-avatar.rotation.set(0, Math.PI, 0);
-avatar.rotation.x = 0.15;
+  loader.load("/Avatar_v5.glb", (gltf) => {
+    avatar = gltf.scene;
+    scene.add(avatar);
+    avatar.rotation.set(0, Math.PI, 0);
+    avatar.rotation.x = 0.15;
 
-  // --- 🔹 Reset e forzo orientamento frontale ---
+    loadingOverlay.style.display = "none";
 
-  avatar.rotateY(Math.PI);        // opzionale, se serve farlo guardare avanti
-  
-  // Centra come già fai
-  const box3 = new THREE.Box3().setFromObject(avatar);
-  const size = new THREE.Vector3();
-  box3.getSize(size);
-  const center = new THREE.Vector3();
-  box3.getCenter(center);
+    // --- 🔹 Reset e forzo orientamento frontale ---
 
-  avatar.position.sub(center);
+    avatar.rotateY(Math.PI);        // opzionale, se serve farlo guardare avanti
 
-  // --- 🔹 Ora imposto la camera ---
-  const maxDim = Math.max(size.x, size.y, size.z);
-  const fov = camera.fov * (Math.PI / 180);
-  let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-  cameraZ *= 1.3;
+    // Centra come già fai
+    const box3 = new THREE.Box3().setFromObject(avatar);
+    const size = new THREE.Vector3();
+    box3.getSize(size);
+    const center = new THREE.Vector3();
+    box3.getCenter(center);
 
-  camera.position.set(0, size.y * 0.5, cameraZ);
-  camera.lookAt(0, size.y * 0.5, 0);
-  
+    avatar.position.sub(center);
 
-  mixer = new THREE.AnimationMixer(avatar);
-  if (gltf.animations.length > 0) {
-    mixer.clipAction(gltf.animations[0]).play();
-  }
+    // --- 🔹 Ora imposto la camera ---
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+    cameraZ *= 1.3;
 
-  console.log("✅ Avatar caricato e frontale!");
-});
+    camera.position.set(0, size.y * 0.5, cameraZ);
+    camera.lookAt(0, size.y * 0.5, 0);
+
+
+    mixer = new THREE.AnimationMixer(avatar);
+    if (gltf.animations.length > 0) {
+      mixer.clipAction(gltf.animations[0]).play();
+    }
+
+    console.log("✅ Avatar caricato e frontale!");
+  }, (xhr) => {
+    const progress = (xhr.loaded / xhr.total) * 100;
+    loadingOverlay.textContent = `Caricamento avatar ${progress.toFixed(0)}%`;
+  });
 
 
   animate();
@@ -105,11 +108,11 @@ function animate() {
     const t = clock.elapsedTime;
     const head = avatar.getObjectByName("Wolf3D_Head") || avatar.getObjectByName("Mesh002");
 
-     avatar.position.y = Math.sin(t * 1.2) * 0.02;
-      if (head) {
-        head.rotation.x = Math.sin(t * 0.7) * 0.02;
-        head.rotation.y = Math.sin(t * 0.9) * 0.015;
-      }
+    avatar.position.y = Math.sin(t * 1.2) * 0.02;
+    if (head) {
+      head.rotation.x = Math.sin(t * 0.7) * 0.02;
+      head.rotation.y = Math.sin(t * 0.9) * 0.015;
+    }
   }
 
   renderer?.render(scene, camera);
