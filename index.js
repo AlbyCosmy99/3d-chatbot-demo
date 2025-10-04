@@ -57,8 +57,6 @@ function init() {
     avatar.rotation.set(0, Math.PI, 0);
     avatar.rotation.x = 0.15;
 
-    loadingOverlay.style.display = "none";
-
     // --- 🔹 Reset e forzo orientamento frontale ---
 
     avatar.rotateY(Math.PI);        // opzionale, se serve farlo guardare avanti
@@ -88,9 +86,6 @@ function init() {
     }
 
     console.log("✅ Avatar caricato e frontale!");
-  }, (xhr) => {
-    const progress = (xhr.loaded / xhr.total) * 100;
-    loadingOverlay.textContent = `Caricamento avatar ${progress.toFixed(0)}%`;
   });
 
 
