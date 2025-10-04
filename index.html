@@ -255,42 +255,42 @@
       opacity: 0.85;
     }
 
-    /* Bottone toggle sempre rotondo */
-    #chatToggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
+/* Bottone toggle sempre rotondo */
+#chatToggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;        
+  background: #0078ff;
+  color: white;
+  font-size: 28px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1;        
+  transition: transform 0.2s ease, background 0.2s ease;
+}
 
-      border-radius: 50%;
-      background: #0078ff;
-      color: white;
-      font-size: 28px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      z-index: 1001;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      aspect-ratio: 1 / 1;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
+#chatToggle:hover {
+  transform: scale(1.05);
+  background: #005fcc;
+}
 
-    #chatToggle:hover {
-      transform: scale(1.05);
-      background: #005fcc;
-    }
-
-    @media (max-width: 768px) {
-      #chatToggle {
-        width: 54px;
-        height: 54px;
-        font-size: 24px;
-        bottom: 15px;
-        right: 15px;
-      }
-    }
+@media (max-width: 768px) {
+  #chatToggle {
+    width: 54px;
+    height: 54px;
+    font-size: 24px;
+    bottom: 15px;
+    right: 15px;
+  }
+}
 
 
     /* 🔹 Responsive */
