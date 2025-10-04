@@ -255,13 +255,13 @@
       opacity: 0.85;
     }
 
-    /* Bottone toggle sempre rotondo */
     #chatToggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      width: 60px;
-      height: 60px;
+
+
+
       border-radius: 50%;
       background: #0078ff;
       color: white;
@@ -270,10 +270,11 @@
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
       z-index: 1001;
+
       display: flex;
       justify-content: center;
       align-items: center;
-      aspect-ratio: 1 / 1;
+
       transition: transform 0.2s ease, background 0.2s ease;
     }
 
@@ -291,6 +292,7 @@
         right: 15px;
       }
     }
+
 
 
     /* 🔹 Responsive */
@@ -8129,27 +8131,44 @@ flexibility(document.documentElement);</script>
 
                   chatToggle.addEventListener("click", () => {
                     chatToggle.style.display = "none";
-                    wrapper.style.display = "block";
+
+                    wrapper.style.display = "flex";
+                    wrapper.style.flexDirection = "column";
+
+                    wrapper.style.alignItems = "end";
+
                     if (typeof init === "function") init();
                   });
 
+                  // Create centered close button
                   const closeBtn = document.createElement("button");
                   closeBtn.textContent = "✖";
                   closeBtn.style.cssText = `
-                  position: absolute;
-                  top: 10px;
-                  right: 10px;
-                  width: 28px;
-                  height: 28px;
-                  border-radius: 50%;
-                  background: #0078ff;
-                  color: #fff;
-                  border: none;
-                  cursor: pointer;
-                  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                  z-index: 10000;
-                `;
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 50%;
+                    background: rgba(0,120,255,0.9);
+                    color: #fff;
+                    border: none;
+                    cursor: pointer;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    font-size: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background 0.2s ease, transform 0.2s ease;
+                  `;
+                  closeBtn.onmouseenter = () => (closeBtn.style.background = "rgba(0,120,255,1)");
+                  closeBtn.onmouseleave = () => (closeBtn.style.background = "rgba(0,120,255,0.9)");
+
                   wrapper.appendChild(closeBtn);
+
+                  closeBtn.addEventListener("click", () => {
+                    wrapper.style.display = "none";
+                    chatToggle.style.display = "flex";
+                  });
+
 
                   closeBtn.addEventListener("click", () => {
                     wrapper.style.display = "none";
