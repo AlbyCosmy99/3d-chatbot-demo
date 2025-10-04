@@ -255,42 +255,42 @@
       opacity: 0.85;
     }
 
-/* Bottone toggle sempre rotondo */
-#chatToggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;         
-  background: #0078ff;
-  color: white;
-  font-size: 28px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  z-index: 1001;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  aspect-ratio: 1 / 1;        
-  transition: transform 0.2s ease, background 0.2s ease;
-}
+    /* Bottone toggle sempre rotondo */
+    #chatToggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #0078ff;
+      color: white;
+      font-size: 28px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      aspect-ratio: 1 / 1;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
 
-#chatToggle:hover {
-  transform: scale(1.05);
-  background: #005fcc;
-}
+    #chatToggle:hover {
+      transform: scale(1.05);
+      background: #005fcc;
+    }
 
-@media (max-width: 768px) {
-  #chatToggle {
-    width: 54px;
-    height: 54px;
-    font-size: 24px;
-    bottom: 15px;
-    right: 15px;
-  }
-}
+    @media (max-width: 768px) {
+      #chatToggle {
+        width: 54px;
+        height: 54px;
+        font-size: 24px;
+        bottom: 15px;
+        right: 15px;
+      }
+    }
 
 
     /* 🔹 Responsive */
@@ -7985,10 +7985,10 @@ flexibility(document.documentElement);</script>
 
 
                 <!-- Bottone toggle -->
-<button id="chatToggle">💬</button>
+                <button id="chatToggle">💬</button>
 
-<!-- Wrapper avatar + chat -->
-<div id="assistantWrapper" style="
+                <!-- Wrapper avatar + chat -->
+                <div id="assistantWrapper" style="
   display:none;
   position:fixed;
   bottom:0;
@@ -8002,16 +8002,16 @@ flexibility(document.documentElement);</script>
   z-index:9999;
 ">
 
-  <!-- Avatar Three.js -->
-  <canvas id="scene" style="
+                  <!-- Avatar Three.js -->
+                  <canvas id="scene" style="
     width:100%;
     height:100%;
     display:block;
     background:transparent;
   "></canvas>
 
-  <!-- Chatbox overlay trasparente -->
-  <div id="assistantContainer" style="
+                  <!-- Chatbox overlay trasparente -->
+                  <div id="assistantContainer" style="
     position:absolute;
     bottom:0;
     left:0;
@@ -8023,8 +8023,8 @@ flexibility(document.documentElement);</script>
     padding:10px;
     box-sizing:border-box;
   ">
-    <!-- Messaggi -->
-    <div id="messages" style="
+                    <!-- Messaggi -->
+                    <div id="messages" style="
       max-height:160px;
       overflow-y:auto;
       display:flex;
@@ -8032,7 +8032,7 @@ flexibility(document.documentElement);</script>
       gap:8px;
       width:100%;
     ">
-      <div class="message bot" style="
+                      <div class="message bot" style="
         background:rgba(0,120,255,0.9);
         color:white;
         padding:8px 12px;
@@ -8040,18 +8040,18 @@ flexibility(document.documentElement);</script>
         max-width:80%;
         font-size:14px;
       ">
-        Ciao! Come posso aiutarti oggi?
-      </div>
-    </div>
+                        Ciao! Come posso aiutarti oggi?
+                      </div>
+                    </div>
 
-    <!-- Input + bottoni -->
-    <div id="chatFooter" style="
+                    <!-- Input + bottoni -->
+                    <div id="chatFooter" style="
       display:flex;
       flex-direction:column;
       gap:8px;
       width:100%;
     ">
-      <textarea id="userInput" placeholder="Scrivi qui..." style="
+                      <textarea id="userInput" placeholder="Scrivi qui..." style="
         width:100%;
         border:none;
         background:rgba(240,240,240,0.8);
@@ -8061,91 +8061,93 @@ flexibility(document.documentElement);</script>
         font-size:14px;
       "></textarea>
 
-      <div style="display:flex; gap:8px; justify-content:space-between; width:100%;">
-        <button id="sendBtn" class="circleBtn">📩</button>
-        <button id="voiceBtn" class="circleBtn">🎤</button>
-        <button id="stopBtn" class="circleBtn">⏹️</button>
-      </div>
-    </div>
-  </div>
-</div>
+                      <div style="display:flex; gap:8px; justify-content:space-between; width:100%;">
+                        <button id="sendBtn" class="circleBtn">📩</button>
+                        <button id="voiceBtn" class="circleBtn">🎤</button>
+                        <button id="stopBtn" class="circleBtn">⏹️</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-<style>
-  /* Toggle rotondo 💬 */
-  #chatToggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #0078ff;
-    color: white;
-    font-size: 28px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 1001;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-  }
+                <style>
+                  /* Toggle rotondo 💬 */
+                  #chatToggle {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    background: #0078ff;
+                    color: white;
+                    font-size: 28px;
+                    border: none;
+                    cursor: pointer;
+                    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+                    z-index: 1001;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                  }
 
-  /* Bottoni chat */
-  .circleBtn {
-    flex:1;
-    min-width:40px;
-    max-width:60px;
-    height:40px;
-    border-radius:50%;
-    border:none;
-    cursor:pointer;
-    font-size:16px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background: rgba(0,120,255,0.85);
-    color:white;
-    transition: transform 0.2s ease, background 0.2s ease;
-  }
-  .circleBtn:hover {
-    background: rgba(0,120,255,1);
-    transform: scale(1.05);
-  }
+                  /* Bottoni chat */
+                  .circleBtn {
+                    flex: 1;
+                    min-width: 40px;
+                    max-width: 60px;
+                    height: 40px;
+                    border-radius: 50%;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(0, 120, 255, 0.85);
+                    color: white;
+                    transition: transform 0.2s ease, background 0.2s ease;
+                  }
 
-  /* Bolle messaggi */
-  .message.user {
-    align-self:flex-end;
-    background:rgba(0,120,255,0.9);
-    color:white;
-    padding:8px 12px;
-    border-radius:12px 12px 0 12px;
-    font-size:14px;
-  }
-  .message.bot {
-    align-self:flex-start;
-    background:rgba(255,255,255,0.8);
-    color:#2c3e50;
-    padding:8px 12px;
-    border-radius:12px 12px 12px 0;
-    font-size:14px;
-  }
-</style>
+                  .circleBtn:hover {
+                    background: rgba(0, 120, 255, 1);
+                    transform: scale(1.05);
+                  }
 
-<script>
-  const wrapper = document.getElementById("assistantWrapper");
-  const chatToggle = document.getElementById("chatToggle");
+                  /* Bolle messaggi */
+                  .message.user {
+                    align-self: flex-end;
+                    background: rgba(0, 120, 255, 0.9);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 12px 12px 0 12px;
+                    font-size: 14px;
+                  }
 
-  chatToggle.addEventListener("click", () => {
-    chatToggle.style.display = "none"; 
-    wrapper.style.display = "block"; 
-    if (typeof init === "function") init(); // avvia Three.js
-  });
+                  .message.bot {
+                    align-self: flex-start;
+                    background: rgba(255, 255, 255, 0.8);
+                    color: #2c3e50;
+                    padding: 8px 12px;
+                    border-radius: 12px 12px 12px 0;
+                    font-size: 14px;
+                  }
+                </style>
 
-  // Bottone chiusura ✖
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✖";
-  closeBtn.style.cssText = `
+                <script>
+                  const wrapper = document.getElementById("assistantWrapper");
+                  const chatToggle = document.getElementById("chatToggle");
+
+                  chatToggle.addEventListener("click", () => {
+                    chatToggle.style.display = "none";
+                    wrapper.style.display = "block";
+                    if (typeof init === "function") init(); // avvia Three.js
+                  });
+
+                  // Bottone chiusura ✖
+                  const closeBtn = document.createElement("button");
+                  closeBtn.textContent = "✖";
+                  closeBtn.style.cssText = `
     position: absolute;
     top: 10px;
     right: 10px;
@@ -8159,13 +8161,13 @@ flexibility(document.documentElement);</script>
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     z-index: 10000;
   `;
-  wrapper.appendChild(closeBtn);
+                  wrapper.appendChild(closeBtn);
 
-  closeBtn.addEventListener("click", () => {
-    wrapper.style.display = "none";
-    chatToggle.style.display = "flex";
-  });
-</script>
+                  closeBtn.addEventListener("click", () => {
+                    wrapper.style.display = "none";
+                    chatToggle.style.display = "flex";
+                  });
+                </script>
 
 
 
@@ -9883,6 +9885,10 @@ flexibility(document.documentElement);</script>
     href="https://www.lotostudios.com/wp-content/plugins/wpforms-lite/assets/css/frontend/modern/wpforms-full.min.css?ver=1.9.3.2"
     media="all">
   <style id="wpforms-modern-full-inline-css">
+    #scene {
+      background: transparent !important;
+    }
+
     :root {
       --wpforms-field-border-radius: 3px;
       --wpforms-field-border-style: solid;

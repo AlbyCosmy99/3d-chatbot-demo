@@ -18,7 +18,7 @@ function init() {
 
   clock = new THREE.Clock();
   scene = new THREE.Scene();
-  scene.background = new THREE.Color("#e6f2ff");
+  scene.background = null; 
 
   const canvas = document.getElementById("scene");
   const width = canvas.clientWidth;
@@ -52,17 +52,14 @@ function init() {
         if (child.isMesh) console.log("Mesh trovata:", child.name);
       });
 
-      // Calcolo bounding box aggiornato
       const box3 = new THREE.Box3().setFromObject(avatar);
       const size = new THREE.Vector3();
       box3.getSize(size);
       const center = new THREE.Vector3();
       box3.getCenter(center);
 
-      // Centra il modello
       avatar.position.sub(center);
 
-      // Adatta la camera
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = camera.fov * (Math.PI / 180);
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
@@ -71,7 +68,6 @@ function init() {
       camera.position.set(0, size.y * 0.5, cameraZ);
       camera.lookAt(0, size.y * 0.5, 0);
 
-      // Mixer animazioni
       mixer = new THREE.AnimationMixer(avatar);
       if (gltf.animations.length > 0) {
         mixer.clipAction(gltf.animations[0]).play();
@@ -117,8 +113,6 @@ function animate() {
 
   renderer?.render(scene, camera);
 }
-
-// --- Chatbot & voice functions ---
 
 async function sendMessage() {
   const input = document.getElementById("userInput");
@@ -196,7 +190,7 @@ function stopSpeaking() {
     });
   }
 
-  console.log("⏹️ Parlato interrotto manualmente.");
+  console.log("Parlato interrotto manualmente.");
 }
 
 function parla(testo) {
@@ -213,12 +207,12 @@ function parla(testo) {
   console.log("Head trovato:", head);
 
   if (!head || !head.morphTargetDictionary) {
-    console.warn("❌ Nessun morph target trovato, uso solo TTS");
+    console.warn("Nessun morph target trovato, uso solo TTS");
     synth.speak(voce);
     return;
   }
 
-  console.log("✅ Morph targets trovati:", head.morphTargetDictionary);
+  console.log("Morph targets trovati:", head.morphTargetDictionary);
 
   const phonemes = Object.keys(head.morphTargetDictionary);
 
@@ -263,13 +257,13 @@ if ("webkitSpeechRecognition" in window) {
   };
 
   recognition.onerror = (err) =>
-    console.error("❌ Errore riconoscimento:", err);
+    console.error("Errore riconoscimento:", err);
 
   recognition.onend = () => {
     voiceBtn.style.background = "#0078ff";
   };
 } else {
-  console.warn("⚠️ Riconoscimento vocale non supportato.");
+  console.warn("Riconoscimento vocale non supportato.");
   if (voiceBtn) voiceBtn.disabled = true;
 }
 
