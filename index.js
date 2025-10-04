@@ -168,7 +168,7 @@ async function parla(testo) {
   if (!avatar) return console.warn("⏳ Avatar non ancora caricato");
 
   try {
-    const res = await fetch("http://localhost:3000/speak", {
+    const res = await fetch("https://avatar3d-polly.onrender.com/speak", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: testo })
