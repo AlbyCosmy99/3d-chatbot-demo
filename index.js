@@ -7,6 +7,20 @@ let speakingInterval = null;
 let isSpeaking = false;
 let initialized = false;
 
+// 🔹 Audio element persistente (iOS compatibile)
+let audioElement = new Audio();
+let audioUnlocked = false;
+
+// --- Sblocca l’audio al primo tap su iOS ---
+document.addEventListener("click", () => {
+  if (!audioUnlocked) {
+    audioElement.play().catch(() => {});
+    audioElement.pause();
+    audioUnlocked = true;
+    console.log("🔓 Audio sbloccato per iOS");
+  }
+}, { once: true });
+
 fetch("/knowledge.json")
   .then(r => r.json())
   .then(data => { knowledge = data; })
