@@ -51,7 +51,7 @@ function init() {
   scene.add(dirLight);
 
   const loader = new GLTFLoader();
-  loader.load("/Avatar_v5.glb", (gltf) => {
+  loader.load("/Avatar_v6.glb", (gltf) => {
     avatar = gltf.scene;
     console.log("🎬 Animazioni trovate:", gltf.animations.map(a => a.name));
     scene.add(avatar);
