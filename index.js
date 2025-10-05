@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 let knowledge = {};
 let scene, camera, renderer, mixer, avatar, clock;
 let speakingInterval = null;
+let isSpeaking = false;
 let initialized = false;
 
 let audioElement = new Audio();
@@ -67,6 +68,16 @@ function init() {
   dirLight.position.set(3, 10, 10);
   scene.add(dirLight);
 
+  function printMorphTargets() {
+    console.log("🔍 Analisi morph targets:");
+    avatar.traverse(obj => {
+      if (obj.isMesh && obj.morphTargetDictionary) {
+        console.log(`🧠 Mesh: ${obj.name}`);
+        console.table(Object.keys(obj.morphTargetDictionary));
+      }
+    });
+  }
+
   const loader = new GLTFLoader();
   loader.load("/Avatar_v6.glb", (gltf) => {
     avatar = gltf.scene;
@@ -85,7 +96,6 @@ function init() {
     const target = armatures[0] || avatar;
     mixer = new THREE.AnimationMixer(target);
 
-
     const actions = {};
     gltf.animations.forEach((clip) => {
       const action = mixer.clipAction(clip);
@@ -95,12 +105,29 @@ function init() {
 
     avatar.userData.animations = actions;
 
-    const standing_idle = Object.keys(actions)[2];
-    if (standing_idle) {
-      playAnimation(standing_idle);
-    }
+    const box3 = new THREE.Box3().setFromObject(avatar);
+    const size = new THREE.Vector3();
+    box3.getSize(size);
+    const center = new THREE.Vector3();
+    box3.getCenter(center);
+    avatar.position.sub(center);
 
-    console.log("Avatar caricato e animazioni pronte!");
+    avatar.rotation.x = 0.15;
+
+    // Posiziona camera
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+    cameraZ *= 1.3;
+    camera.position.set(0, size.y * 0.5, cameraZ);
+    camera.lookAt(0, size.y * 0.5, 0);
+
+    // 🟢 Imposta animazione iniziale
+    playAnimation("standing_idle");
+
+    setTimeout(printMorphTargets, 1000);
+
+    console.log("✅ Avatar caricato e animazioni pronte!");
   });
 
   animate();
@@ -305,17 +332,105 @@ async function parla(testo) {
     const marks = data.marks;
 
     const audio = new Audio("data:audio/mp3;base64," + audioBase64);
-    window.setCurrentAudio(audio); // 🔹 consente di fermarlo da stopBtn
+    window.setCurrentAudio(audio);
     audio.play();
-    playAnimation('thinking_idle')
 
+    playAnimation("thinking_idle");
     syncVisemesWithAvatar(marks, audio);
+
+    audio.addEventListener("ended", () => {
+      playAnimation("standing_idle");
+    });
 
   } catch (err) {
     console.error("Errore Polly:", err);
   }
 }
 
+
+function syncVisemesWithAvatar(marks, audio) {
+  const faceMeshes = [];
+  avatar.traverse(obj => {
+    if (obj.isMesh && obj.morphTargetDictionary && Object.keys(obj.morphTargetDictionary).length > 0) {
+      faceMeshes.push(obj);
+    }
+  });
+  if (faceMeshes.length === 0) {
+    console.warn("⚠️ Nessuna mesh con morph target trovata!");
+    return;
+  }
+
+  const visemeMap = {
+    "p": ["PP", "jawOpen"],
+    "f": ["FF", "mouthFunnel"],
+    "th": ["TH", "mouthPucker", "jawOpen"],
+    "t": ["DD", "mouthClose"],
+    "S": ["SS", "mouthFunnel"],
+    "k": ["kk", "jawOpen"],
+    "n": ["nn", "mouthClose"],
+    "r": ["RR", "mouthFunnel"],
+    "a": ["aa", "jawOpen"],
+    "e": ["E", "jawOpen"],
+    "i": ["I", "mouthStretchLeft", "mouthStretchRight"],
+    "o": ["O", "mouthFunnel", "mouthPucker"],
+    "u": ["U", "mouthPucker"],
+    "ch": ["CH", "jawOpen"],
+    "sil": ["mouthClose"]
+  };
+
+  let lastIndex = 0;
+  const decay = 0.9;
+  const offsetMs = 60;
+
+  const animateVisemes = () => {
+    if (audio.paused) return;
+
+    const currentTime = audio.currentTime * 1000 + offsetMs;
+    const nextMark = marks[lastIndex];
+
+    if (nextMark && currentTime >= nextMark.time) {
+      lastIndex++;
+      const visemeKeys = visemeMap[nextMark.value];
+      if (visemeKeys) {
+        faceMeshes.forEach(mesh => {
+          const dict = mesh.morphTargetDictionary;
+          const inf = mesh.morphTargetInfluences;
+          visemeKeys.forEach(vKey => {
+            const idx = dict[vKey];
+            if (idx !== undefined) {
+
+              const nextTime = marks[lastIndex]?.time || (nextMark.time + 100);
+              const duration = (nextTime - nextMark.time) / 1000;
+              const intensity = THREE.MathUtils.clamp(0.4 + Math.random() * 0.4, 0, 1);
+              inf[idx] = Math.min(1, intensity);
+            }
+          });
+        });
+      }
+    }
+
+    faceMeshes.forEach(mesh => {
+      const inf = mesh.morphTargetInfluences;
+      for (let i = 0; i < inf.length; i++) {
+        inf[i] = THREE.MathUtils.lerp(inf[i], 0, 1 - decay);
+      }
+    });
+
+    requestAnimationFrame(animateVisemes);
+  };
+
+  audio.addEventListener("play", () => {
+    isSpeaking = true;
+    requestAnimationFrame(animateVisemes);
+  });
+
+  audio.addEventListener("ended", () => {
+    isSpeaking = false;
+    resetAllMouth();
+  });
+}
+
+// --- RESET BOCCA ---
 function resetAllMouth() {
   avatar.traverse(mesh => {
     if (mesh.isMesh && mesh.morphTargetInfluences) {
@@ -326,122 +441,5 @@ function resetAllMouth() {
   });
 }
 
-function syncVisemesWithAvatar(marks, audio) {
-  const visemeMap = {
-    "p": "PP", "f": "FF", "th": "TH", "t": "DD",
-    "S": "SS", "k": "kk", "n": "nn", "r": "RR",
-    "a": "aa", "e": "E", "i": "I", "o": "O", "u": "U",
-    "sil": "mouthClose"
-  };
-
-  const faceMeshes = [];
-  avatar.traverse(obj => {
-    if (obj.isMesh && obj.morphTargetDictionary && Object.keys(obj.morphTargetDictionary).length > 0) {
-      faceMeshes.push(obj);
-    }
-  });
-
-  if (faceMeshes.length === 0) {
-    console.warn("⚠️ Nessuna mesh con morph target trovata!");
-    return;
-  }
-
-  const offsetMs = 60; // 🔹 leggero ritardo per sincronia audio
-  let lastIndex = 0;
-  let currentIntensity = 0;
-  let currentViseme = null;
-
-  const resetMouth = (decay = 0.96) => {
-    faceMeshes.forEach(mesh => {
-      for (let key in mesh.morphTargetDictionary) {
-        const idx = mesh.morphTargetDictionary[key];
-        if (idx !== undefined) {
-          mesh.morphTargetInfluences[idx] *= decay;
-        }
-      }
-    });
-  };
-
-  const animateVisemes = () => {
-    if (!audio.paused && lastIndex < marks.length) {
-      const currentTime = (audio.currentTime * 1000) + offsetMs;
-      const next = marks[lastIndex];
-
-      if (currentTime >= next.time) {
-        if (next.type === "viseme" && visemeMap[next.value]) {
-          currentViseme = visemeMap[next.value];
-          currentIntensity = 0.3 + Math.random() * 0.3; // 🔹 apertura più ampia (0.3–0.6)
-        } else {
-          currentViseme = "mouthClose";
-          currentIntensity = 0.12; // 🔹 chiusura leggera nei silenzi
-        }
-        lastIndex++;
-      }
-
-      resetMouth();
-
-      if (currentViseme) {
-        faceMeshes.forEach(mesh => {
-          const idx = mesh.morphTargetDictionary[currentViseme];
-          if (idx !== undefined) {
-            mesh.morphTargetInfluences[idx] = THREE.MathUtils.lerp(
-              mesh.morphTargetInfluences[idx],
-              currentIntensity,
-              0.2 // 🔹 transizione morbida anche con apertura più ampia
-            );
-          }
-        });
-      }
-
-      requestAnimationFrame(animateVisemes);
-    } else {
-      const fadeOut = setInterval(() => {
-        resetMouth(0.92);
-      }, 30);
-      setTimeout(() => clearInterval(fadeOut), 400);
-    }
-  };
-
-  audio.addEventListener("play", () => {
-    isSpeaking = true;
-    requestAnimationFrame(animateVisemes);
-  });
-
-  audio.addEventListener("ended", () => {
-    isSpeaking = false;
-    resetMouth();
-  });
-}
-
-
-
-
-// --- 🎤 RICONOSCIMENTO VOCALE (facoltativo) ---
-const voiceBtn = document.getElementById("voiceBtn");
-
-if ("webkitSpeechRecognition" in window) {
-  const recognition = new webkitSpeechRecognition();
-  recognition.lang = "it-IT";
-  recognition.continuous = false;
-  recognition.interimResults = false;
-
-  voiceBtn.addEventListener("click", () => {
-    recognition.start();
-    voiceBtn.style.background = "#ff4d4d";
-  });
-
-  recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    document.getElementById("userInput").value = transcript;
-    sendMessage();
-  };
-
-  recognition.onerror = (err) => console.error("❌ Errore riconoscimento:", err);
-  recognition.onend = () => { voiceBtn.style.background = "#0078ff"; };
-} else {
-  console.warn("⚠️ Riconoscimento vocale non supportato.");
-  if (voiceBtn) voiceBtn.disabled = true;
-}
-
-window.sendMessage = sendMessage;
 window.init = init;
+
