@@ -355,32 +355,36 @@ function syncVisemesWithAvatar(marks, audio) {
       faceMeshes.push(obj);
     }
   });
+
   if (faceMeshes.length === 0) {
     console.warn("⚠️ Nessuna mesh con morph target trovata!");
     return;
   }
 
+  // 🎨 Mappatura ottimizzata visemi → morph targets
   const visemeMap = {
     "p": ["PP", "jawOpen"],
     "f": ["FF", "mouthFunnel"],
-    "th": ["TH", "mouthPucker", "jawOpen"],
+    "th": ["TH", "mouthPucker"],
     "t": ["DD", "mouthClose"],
     "S": ["SS", "mouthFunnel"],
     "k": ["kk", "jawOpen"],
     "n": ["nn", "mouthClose"],
     "r": ["RR", "mouthFunnel"],
     "a": ["aa", "jawOpen"],
-    "e": ["E", "jawOpen"],
+    "e": ["E", "jawOpen", "mouthSmileLeft", "mouthSmileRight"],
     "i": ["I", "mouthStretchLeft", "mouthStretchRight"],
-    "o": ["O", "mouthFunnel", "mouthPucker"],
+    "o": ["O", "mouthFunnel"],
     "u": ["U", "mouthPucker"],
     "ch": ["CH", "jawOpen"],
     "sil": ["mouthClose"]
   };
 
   let lastIndex = 0;
-  const decay = 0.9;
-  const offsetMs = 60;
+  const decay = 0.88; // 🕊️ leggermente più morbido
+  const offsetMs = 60; // 🔧 compensazione browser
+  const maxOpen = 0.35; // 🧩 limite massimo di apertura bocca
+  const minOpen = 0.1;  // 🧩 apertura minima percepibile
 
   const animateVisemes = () => {
     if (audio.paused) return;
@@ -390,18 +394,26 @@ function syncVisemesWithAvatar(marks, audio) {
 
     if (nextMark && currentTime >= nextMark.time) {
       lastIndex++;
+
       const visemeKeys = visemeMap[nextMark.value];
       if (visemeKeys) {
         faceMeshes.forEach(mesh => {
           const dict = mesh.morphTargetDictionary;
           const inf = mesh.morphTargetInfluences;
+          const baseIntensity = THREE.MathUtils.clamp(
+            minOpen + Math.random() * (maxOpen - minOpen),
+            0,
+            1
+          );
+
+          // 🔹 attenua alcune vocali più forti
+          let intensity = baseIntensity;
+          if (["a", "o", "u"].includes(nextMark.value)) intensity *= 0.8;
+          if (["p", "f", "t"].includes(nextMark.value)) intensity *= 0.6;
+
           visemeKeys.forEach(vKey => {
             const idx = dict[vKey];
             if (idx !== undefined) {
-
-              const nextTime = marks[lastIndex]?.time || (nextMark.time + 100);
-              const duration = (nextTime - nextMark.time) / 1000;
-              const intensity = THREE.MathUtils.clamp(0.4 + Math.random() * 0.4, 0, 1);
               inf[idx] = Math.min(1, intensity);
             }
           });
@@ -409,6 +421,7 @@ function syncVisemesWithAvatar(marks, audio) {
       }
     }
 
+    // 🌀 Smorzamento fluido e interpolazione continua
     faceMeshes.forEach(mesh => {
       const inf = mesh.morphTargetInfluences;
       for (let i = 0; i < inf.length; i++) {
@@ -420,15 +433,16 @@ function syncVisemesWithAvatar(marks, audio) {
   };
 
   audio.addEventListener("play", () => {
-    isSpeaking = true;
+    window.isSpeaking = true;
     requestAnimationFrame(animateVisemes);
   });
 
   audio.addEventListener("ended", () => {
-    isSpeaking = false;
+    window.isSpeaking = false;
     resetAllMouth();
   });
 }
+
 
 // --- RESET BOCCA ---
 function resetAllMouth() {
