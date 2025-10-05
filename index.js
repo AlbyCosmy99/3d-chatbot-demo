@@ -53,6 +53,7 @@ function init() {
   const loader = new GLTFLoader();
   loader.load("/Avatar_v5.glb", (gltf) => {
     avatar = gltf.scene;
+    console.log("🎬 Animazioni trovate:", gltf.animations.map(a => a.name));
     scene.add(avatar);
     avatar.rotation.set(0, Math.PI, 0);
     avatar.rotation.x = 0.15;
