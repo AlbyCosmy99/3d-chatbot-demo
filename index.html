@@ -284,6 +284,34 @@
       background: #005fcc;
     }
 
+    #assistantWrapper,
+    #assistantContainer,
+    #messages,
+    textarea#userInput {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
+    }
+
+        #chatFooter {
+          border-radius: 0.5rem;
+        }
+
+    canvas#scene {
+      background: transparent !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
+
+    body,
+    html {
+      background: transparent !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+
     @media (max-width: 768px) {
       #chatToggle {
         width: 54px;
@@ -293,8 +321,6 @@
         right: 15px;
       }
     }
-
-
 
     /* 🔹 Responsive */
     @media (max-width: 768px) {
