@@ -4,7 +4,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 let knowledge = {};
 let scene, camera, renderer, mixer, avatar, clock;
 let speakingInterval = null;
-let isSpeaking = false;
 let initialized = false;
 
 let audioElement = new Audio();
@@ -18,6 +17,24 @@ document.addEventListener("click", () => {
     console.log("🔓 Audio sbloccato per iOS");
   }
 }, { once: true });
+
+let currentAction = null;
+function playAnimation(name, fadeDuration = 0.5) {
+  if (!avatar?.userData?.animations) return;
+  const action = avatar.userData.animations[name];
+  if (!action) {
+    console.warn(`⚠️ Animazione '${name}' non trovata.`);
+    return;
+  }
+
+  if (currentAction === action) return;
+
+  if (currentAction) currentAction.fadeOut(fadeDuration);
+
+  action.reset().fadeIn(fadeDuration).play();
+  currentAction = action;
+  console.log(`▶️ Animazione attiva: ${name}`);
+}
 
 fetch("/knowledge.json")
   .then(r => r.json())
@@ -78,33 +95,13 @@ function init() {
 
     avatar.userData.animations = actions;
 
-    const firstAnim = Object.keys(actions)[0];
-    if (firstAnim) {
-      playAnimation(firstAnim);
+    const standing_idle = Object.keys(actions)[2];
+    if (standing_idle) {
+      playAnimation(standing_idle);
     }
 
     console.log("Avatar caricato e animazioni pronte!");
   });
-
-  let currentAction = null;
-  function playAnimation(name, fadeDuration = 0.5) {
-    if (!avatar?.userData?.animations) return;
-    const action = avatar.userData.animations[name];
-    if (!action) {
-      console.warn(`⚠️ Animazione '${name}' non trovata.`);
-      return;
-    }
-
-    if (currentAction === action) return;
-
-    if (currentAction) currentAction.fadeOut(fadeDuration);
-
-    action.reset().fadeIn(fadeDuration).play();
-    currentAction = action;
-    console.log(`▶️ Animazione attiva: ${name}`);
-  }
-
-
 
   animate();
 }
@@ -284,6 +281,7 @@ function addMessage(sender, text) {
 }
 
 function stopSpeaking() {
+  playAnimation('standing_idle')
   isSpeaking = false;
   clearInterval(speakingInterval);
   speakingInterval = null;
@@ -309,6 +307,7 @@ async function parla(testo) {
     const audio = new Audio("data:audio/mp3;base64," + audioBase64);
     window.setCurrentAudio(audio); // 🔹 consente di fermarlo da stopBtn
     audio.play();
+    playAnimation('thinking_idle')
 
     syncVisemesWithAvatar(marks, audio);
 
