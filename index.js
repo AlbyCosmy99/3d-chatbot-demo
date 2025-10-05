@@ -4,7 +4,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 let knowledge = {};
 let scene, camera, renderer, mixer, avatar, clock;
 let speakingInterval = null;
-let isSpeaking = false;
 let initialized = false;
 
 let audioElement = new Audio();
@@ -58,11 +57,8 @@ function init() {
     avatar.rotation.set(0, Math.PI, 0);
     avatar.rotation.x = 0.15;
 
-    // --- 🔹 Reset e forzo orientamento frontale ---
+    avatar.rotateY(Math.PI);
 
-    avatar.rotateY(Math.PI);        // opzionale, se serve farlo guardare avanti
-
-    // Centra come già fai
     const box3 = new THREE.Box3().setFromObject(avatar);
     const size = new THREE.Vector3();
     box3.getSize(size);
@@ -71,7 +67,6 @@ function init() {
 
     avatar.position.sub(center);
 
-    // --- 🔹 Ora imposto la camera ---
     const maxDim = Math.max(size.x, size.y, size.z);
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
@@ -157,12 +152,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let recognition = null;
   let listening = false;
-  let currentAudio = null; // 🔹 serve per poter fermare l’avatar
+  let currentAudio = null;
 
-  // 🧠 PATCH: assegno l’audio globale nel sistema TTS
   window.setCurrentAudio = (audio) => { currentAudio = audio; };
 
-  // 💬 INVIO MESSAGGIO TESTO
   sendBtn.addEventListener("click", () => {
     const msg = input.value.trim();
     if (!msg) return;
@@ -176,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🎤 RICONOSCIMENTO VOCALE
   if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
     const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechAPI();
@@ -198,7 +190,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       input.value = transcript;
 
-      // Se è finale, invia il messaggio
       if (event.results[0].isFinal) {
         console.log("🗣️ Testo finale:", transcript);
         sendMessage();
@@ -219,7 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("🛑 Microfono chiuso");
     };
 
-    // 🔘 Bottone per attivare/disattivare microfono
     voiceBtn.addEventListener("click", () => {
       if (!listening) {
         try {
@@ -236,25 +226,21 @@ document.addEventListener("DOMContentLoaded", () => {
     voiceBtn.disabled = true;
   }
 
-  // ⏹️ STOP: ferma parlato e microfono
   stopBtn.addEventListener("click", () => {
     console.log("⏹️ Stop premuto — fermo audio e animazioni");
-    // 1️⃣ Ferma microfono
     if (recognition && listening) recognition.stop();
     listening = false;
     voiceBtn.classList.remove("recording");
 
-    // 2️⃣ Ferma parlato avatar
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.currentTime = 0;
     }
 
-    // 3️⃣ Ferma bocca e animazioni
     stopSpeaking();
   });
 
-  console.log("✅ Bottoni inizializzati correttamente");
+  console.log("Bottoni inizializzati correttamente");
 });
 
 
