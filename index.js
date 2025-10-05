@@ -151,13 +151,112 @@ async function sendMessage() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("userInput");
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
+  const sendBtn = document.getElementById("sendBtn");
+  const voiceBtn = document.getElementById("voiceBtn");
+  const stopBtn = document.getElementById("stopBtn");
+
+  let recognition = null;
+  let listening = false;
+  let currentAudio = null; // 🔹 serve per poter fermare l’avatar
+
+  // 🧠 PATCH: assegno l’audio globale nel sistema TTS
+  window.setCurrentAudio = (audio) => { currentAudio = audio; };
+
+  // 💬 INVIO MESSAGGIO TESTO
+  sendBtn.addEventListener("click", () => {
+    const msg = input.value.trim();
+    if (!msg) return;
+    sendMessage();
   });
 
-  const stopBtn = document.getElementById("stopBtn");
-  if (stopBtn) stopBtn.addEventListener("click", stopSpeaking);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // 🎤 RICONOSCIMENTO VOCALE
+  if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+    const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechAPI();
+    recognition.lang = "it-IT";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onstart = () => {
+      listening = true;
+      voiceBtn.classList.add("recording");
+      input.placeholder = "🎙️ Sto ascoltando...";
+      console.log("🎤 Microfono avviato");
+    };
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      input.value = transcript;
+
+      // Se è finale, invia il messaggio
+      if (event.results[0].isFinal) {
+        console.log("🗣️ Testo finale:", transcript);
+        sendMessage();
+      }
+    };
+
+    recognition.onerror = (err) => {
+      console.error("❌ Errore riconoscimento:", err);
+      listening = false;
+      voiceBtn.classList.remove("recording");
+      input.placeholder = "Scrivi qui...";
+    };
+
+    recognition.onend = () => {
+      listening = false;
+      voiceBtn.classList.remove("recording");
+      input.placeholder = "Scrivi qui...";
+      console.log("🛑 Microfono chiuso");
+    };
+
+    // 🔘 Bottone per attivare/disattivare microfono
+    voiceBtn.addEventListener("click", () => {
+      if (!listening) {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.warn("⚠️ Microfono non avviabile:", e);
+        }
+      } else {
+        recognition.stop();
+      }
+    });
+  } else {
+    console.warn("⚠️ Riconoscimento vocale non supportato.");
+    voiceBtn.disabled = true;
+  }
+
+  // ⏹️ STOP: ferma parlato e microfono
+  stopBtn.addEventListener("click", () => {
+    console.log("⏹️ Stop premuto — fermo audio e animazioni");
+    // 1️⃣ Ferma microfono
+    if (recognition && listening) recognition.stop();
+    listening = false;
+    voiceBtn.classList.remove("recording");
+
+    // 2️⃣ Ferma parlato avatar
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    }
+
+    // 3️⃣ Ferma bocca e animazioni
+    stopSpeaking();
+  });
+
+  console.log("✅ Bottoni inizializzati correttamente");
 });
+
 
 function addMessage(sender, text) {
   const div = document.createElement("div");
@@ -192,9 +291,11 @@ async function parla(testo) {
     const marks = data.marks;
 
     const audio = new Audio("data:audio/mp3;base64," + audioBase64);
+    window.setCurrentAudio(audio); // 🔹 consente di fermarlo da stopBtn
     audio.play();
 
     syncVisemesWithAvatar(marks, audio);
+
   } catch (err) {
     console.error("Errore Polly:", err);
   }
