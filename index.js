@@ -170,20 +170,21 @@ async function sendMessage() {
   input.value = "";
 
   try {
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+        "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
+        model: "gpt-4o-mini", // can be changed to gpt-4o or gpt-3.5-turbo
         messages: [
           { role: "system", content: "Sei un assistente virtuale 3D amichevole." },
           { role: "user", content: msg }
         ]
       })
     });
+
 
     const data = await res.json();
     const risposta = data.choices?.[0]?.message?.content || "Nessuna risposta 😕";
