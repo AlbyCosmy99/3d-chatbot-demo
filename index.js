@@ -177,7 +177,7 @@ async function sendMessage() {
         "Authorization": `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // can be changed to gpt-4o or gpt-3.5-turbo
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: "Sei un assistente virtuale 3D amichevole." },
           { role: "user", content: msg }
